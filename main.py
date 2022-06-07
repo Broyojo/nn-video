@@ -159,6 +159,16 @@ class LinearGradientDescent(Scene):
             axes.coords_to_point(5, 7),
         ]
         self.play(*[Write(Dot(dot, color=GREEN)) for dot in dots])
-        self.wait()
-        self.play(Create(axes.plot(lambda x: 1.28571*x+0.285714)))
-        self.wait()
+        self.play(Create(axes.plot(lambda x: 1.4*x+0.2)))
+
+        line_eq = MathTex("{{f(x)}}={{m}}{{x}}+{{b}}").move_to(LEFT*4)
+
+        self.play(Write(line_eq))
+
+        self.play(Indicate(line_eq[2]))
+        self.play(Indicate(line_eq[5]))
+
+        self.play(ReplacementTransform(line_eq[2], MathTex("1.4")))
+
+        self.play(Create(axes.plot(lambda x: 2*x+0.1, color=RED)))
+        self.play(Create(axes.plot(lambda x: 1.3*x-1.5, color=RED)))
