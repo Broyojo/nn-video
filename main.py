@@ -28,7 +28,11 @@ class LinearScene(Scene):
         self.play(DrawBorderThenFill(axes), Write(labels), *
                   [Write(dot) for dot in dots])
 
+        self.wait()
+
         self.play(Create(guess_line))
+
+        self.wait()
 
         error_braces = [
             BraceBetweenPoints(
@@ -47,7 +51,11 @@ class LinearScene(Scene):
 
         self.play(*[Create(brace) for brace in error_braces])
 
+        self.wait()
+
         self.play(*[Write(label) for label in error_brace_labels])
+
+        self.wait()
 
         graph_scene = VGroup(axes, labels, guess_line, *error_braces,
                              *error_brace_labels, *dots)
@@ -57,6 +65,8 @@ class LinearScene(Scene):
         graph_scene.target.shift(3*LEFT + 2*UP).scale(0.5)
 
         self.play(MoveToTarget(graph_scene))
+
+        self.wait()
 
         eqs = [
             MathTex(r"\text{error}=e_1^2 + e_2^2 + e_3^2"),
@@ -82,11 +92,16 @@ class LinearScene(Scene):
 
         for i, eq in enumerate(eqs[: 4]):
             self.play(Write(eq.move_to(RIGHT*3 + UP*3 + 1.5*DOWN*i)))
+            self.wait()
 
         self.play(Write(eqs[4].move_to(DOWN*3).scale(0.9)))
 
+        self.wait()
+
         self.play(eqs[4].animate.shift(UP*6),
                   FadeOut(graph_scene), FadeOut(*eqs[:4]))
+
+        self.wait()
 
         self.play(Write(eqs[5]))
 
@@ -94,33 +109,52 @@ class LinearScene(Scene):
 
         self.play(Transform(eqs[5], partial_eqs))
 
+        self.wait()
+
         self.play(Flash(eqs[6], flash_radius=1.4))
+
+        self.wait()
+
         self.play(Flash(eqs[7], flash_radius=1.4))
+
+        self.wait()
 
         self.play(FadeOut(eqs[5], eqs[6], eqs[7], eqs[4]))
 
+        self.wait()
+
         self.play(Write(eqs[8].move_to(UP*2.5)))
+        self.wait()
         self.play(FadeIn(eqs[9].move_to(UP*1.5), shift=DOWN))
+        self.wait()
         self.play(ReplacementTransform(
             eqs[9], eqs[10].scale(0.9).move_to(UP*1.5)))
+        self.wait()
 
         self.play(Write(eqs[11].move_to(DOWN)))
+        self.wait()
         self.play(FadeIn(eqs[12].move_to(DOWN*2), shift=DOWN))
+        self.wait()
         self.play(ReplacementTransform(eqs[12], eqs[13].move_to(DOWN*2)))
+        self.wait()
 
         self.play(FadeOut(eqs[8], eqs[9], eqs[11], eqs[12]), eqs[10].animate.shift(
             UP*2).scale(0.9), eqs[13].animate.shift(UP*4.5).scale(0.8))
+        self.wait()
 
         self.play(ReplacementTransform(
             eqs[10], eqs[14].move_to(eqs[10]).scale(0.83)))
+        self.wait()
         self.play(ReplacementTransform(
             eqs[13], eqs[15].move_to(eqs[13]).scale(0.9)))
+        self.wait()
 
         system_of_eqs = VGroup(eqs[14], eqs[15])
 
         system_of_eqs_brace = Brace(system_of_eqs, direction=LEFT)
 
         self.play(Create(system_of_eqs_brace))
+        self.wait()
 
         point_table = DecimalTable(
             [[2.2, 3.5, 4.1], [14.3, 20.1, 23.5]],
@@ -129,16 +163,20 @@ class LinearScene(Scene):
         )
 
         self.play(Create(point_table.move_to(LEFT*3)))
+        self.wait()
 
         eq_arrow = Arrow(start=UP, end=DOWN).move_to(RIGHT*2+UP*1.3)
 
         self.play(Create(eq_arrow))
+        self.wait()
 
         m_approx = MathTex(r"m\approx 4.781")
         b_approx = MathTex(r"b\approx 3.68")
 
         self.play(Write(m_approx.move_to(RIGHT*2+UP*0.2)))
+        self.wait()
         self.play(Write(b_approx.move_to(RIGHT*2+DOWN*0.3)))
+        self.wait()
 
         solving_scene = VGroup(
             point_table, system_of_eqs_brace, system_of_eqs, eqs[14], eqs[15], eq_arrow)
@@ -165,6 +203,7 @@ class LinearScene(Scene):
             LEFT*6+UP*3), b_approx.animate.shift(LEFT*6+UP*3),
             DrawBorderThenFill(axes), Write(labels), *
             [Write(dot) for dot in dots])
+        self.wait()
 
         self.play(Create(good_line))
 
@@ -188,12 +227,11 @@ class QuinticScene(Scene):
             Dot(dot, color=GREEN) for dot in dot_coords
         ]
 
-        good_line = axes.plot(fn_6, color=BLUE)
+        #good_line = axes.plot(fn_6, color=BLUE)
 
         self.play(DrawBorderThenFill(axes), Write(labels), *
                   [Write(dot) for dot in dots])
-
-        self.play(Create(good_line))
+        self.wait()
 
         eqs = [
             MathTex(r"ax^6+bx^5+cx^4+dx^3+ex^2+fx+g"),
@@ -207,26 +245,33 @@ class QuinticScene(Scene):
         ]
 
         self.play(Write(eqs[0].move_to(UP*3+RIGHT*2.5)))
+        self.wait()
 
-        graph_scene = VGroup(axes, labels, *dots, good_line, eqs[0])
+        graph_scene = VGroup(axes, labels, *dots, eqs[0])
 
         self.play(FadeOut(graph_scene))
+        self.wait()
 
         for i, eq in enumerate(eqs[1:12]):
             eq.move_to(UP*3.5+DOWN*i*0.7).scale(0.7)
 
         self.play(*[Write(eq) for eq in eqs[1:12]])
+        self.wait()
 
         self.play(*[FadeOut(eq) for eq in eqs[1:12]])
+        self.wait()
 
         for i, eq in enumerate(eqs[12:22]):
             eq.move_to(UP*3+DOWN*i).scale(0.8)
 
         self.play(*[Write(eq) for eq in eqs[12:22]])
+        self.wait()
 
         self.play(*[FadeOut(eq) for eq in eqs[12:22]])
+        self.wait()
 
         self.play(Write(Text("?", font_size=400)))
+        self.wait()
 
 
 class GradientScene(Scene):
@@ -245,12 +290,17 @@ class GradientScene(Scene):
 
         self.play(Write(eqs[0].move_to(UP/2).scale(0.8)),
                   Write(eqs[1].move_to(DOWN/2).scale(0.8)))
+        self.wait()
 
         partials = VGroup(eqs[0], eqs[1])
 
         self.play(ReplacementTransform(partials, eqs[2]))
+        self.wait()
+
+        self.wait()
 
         self.play(FadeOut(partials, eqs[2]))
+        self.wait()
 
         axes = Axes(x_range=[-8, 8, 2], y_range=[0, 9, 2],
                     axis_config={"include_numbers": True},)
@@ -264,8 +314,10 @@ class GradientScene(Scene):
 
         self.play(DrawBorderThenFill(axes), Write(labels), Write(
             eqs[3].move_to(UP*3+LEFT*4)), Write(eqs[4].move_to(UP*2.3+LEFT*4)))
+        self.wait()
 
         self.play(Create(x2_line))
+        self.wait()
 
         t = ValueTracker(2)
 
@@ -302,14 +354,15 @@ class GradientScene(Scene):
         ) + DOWN*0.5))
 
         self.play(Create(vec_1d), Create(vec_orig), Write(vec_1d_mag))
+        self.wait()
 
         self.play(t.animate.set_value(0))
-
-        self.wait(2)  # just for testing, but makes it easier to see
+        self.wait()
 
         t.set_value(-0.0001)
 
         self.play(t.animate.set_value(-2))
+        self.wait()
 
 
 class Gradient3DScene(ThreeDScene):
@@ -341,32 +394,39 @@ class Gradient3DScene(ThreeDScene):
         self.add_fixed_in_frame_mobjects(eqs[0])
 
         self.play(DrawBorderThenFill(axes), Write(eqs[0].to_corner(UL)))
+        self.wait()
         self.play(Write(labels[0]))
+        self.wait()
         self.play(Write(labels[1]))
+        self.wait()
         self.play(Write(labels[2]))
+        self.wait()
         self.play(Create(surface))
+        self.wait()
 
         grad_vec = Arrow3D(start=err_fn(1, -0.5), end=err_fn(
             1, 0.5), color=YELLOW).move_to(err_fn(1, 0.1))
 
         self.play(Create(grad_vec))
-
+        self.wait()
         q_mark = Text("?", font_size=200).move_to(LEFT*5)
 
         self.add_fixed_in_frame_mobjects(q_mark)
 
         self.play(Write(q_mark))
+        self.wait()
 
         self.play(FadeOut(q_mark))
+        self.wait()
 
         self.play(FadeOut(eqs[0], run_time=0.5))
+        self.wait()
 
         self.add_fixed_in_frame_mobjects(eqs[1])
 
         self.play(Write(eqs[1].to_corner(UL)), ReplacementTransform(grad_vec, Arrow3D(start=err_fn(
             1, 0.5), end=err_fn(1, -0.5), color=YELLOW).move_to(err_fn(1, 0.1))))
-
-        self.wait(30)
+        self.wait()
 
 
 class GradientDescentScene(Scene):
@@ -401,36 +461,48 @@ class GradientDescentScene(Scene):
         self.play(Write(eqs[0].move_to(UP*3.5+LEFT*5.5)),
                   Write(eqs[1].move_to(UP*2.8+LEFT*5.5)),
                   Write(eqs[2].move_to(UP*3.2+RIGHT)))
-
+        self.wait()
         self.play(TransformFromCopy(eqs[2], eqs[3].move_to(UP*1.8+RIGHT)))
+        self.wait()
 
         self.play(TransformFromCopy(eqs[3], eqs[4].move_to(UP*0.3+RIGHT)))
+        self.wait()
 
         self.play(ReplacementTransform(eqs[4], eqs[5].move_to(UP*0.2+RIGHT)))
+
+        self.wait()
 
         self.play(TransformFromCopy(
             VGroup(eqs[0], eqs[1], eqs[5]), eqs[6].move_to(UP*-1.5+RIGHT)))
 
+        self.wait()
+
         self.play(TransformFromCopy(eqs[6], eqs[7].move_to(UP*-3.1+RIGHT)))
+
+        self.wait()
 
         self.play(ReplacementTransform(
             eqs[0], eqs[8].move_to(eqs[0]).scale(0.7)))
+
+        self.wait()
         self.play(ReplacementTransform(
             eqs[1], eqs[9].move_to(eqs[1]).scale(0.8).shift(DOWN*0.5)))
+
+        self.wait()
 
         right_eqs = VGroup(*eqs[2:8])
 
         self.play(right_eqs.animate.shift(RIGHT))
 
+        self.wait()
+
         self.play(Write(eqs[10].move_to(LEFT*4).scale(0.6)))
 
-        self.wait(30)
+        self.wait()
 
 
 class RollingBallScene(Scene):
     def construct(self):
-        random.seed = 69420
-        randomness = 0.3
         axes = Axes(x_range=[-4, 10], y_range=[-1500, 2000, 1000])
         def fn_6(x): return (x+2)*(x+1)*(x-3)*(x-4)*(x-6)*(x-8)
         line = axes.plot(fn_6, color=BLUE)
@@ -445,20 +517,35 @@ class RollingBallScene(Scene):
 
         self.play(DrawBorderThenFill(axes), Create(line), Write(ball))
 
+        self.wait()
+
         self.play(t.animate.set_value(2))
+
+        self.wait()
+
         self.play(t.animate.set_value(2.7))
+
+        self.wait()
+
         self.play(t.animate.set_value(3.3))
+
+        self.wait()
+
         self.play(t.animate.set_value(3.474))
+
+        self.wait()
 
         lowest = Point(axes.coords_to_point(7.336, -998.639))
 
         self.play(Create(SurroundingRectangle(lowest, buff=0.5)))
 
+        self.wait()
+
         top_text = Text("Gradient Descent")
 
         self.play(Write(top_text.to_edge(UP)))
 
-        self.wait(30)
+        self.wait()
 
 
 class LearningRateScene(Scene):
@@ -481,6 +568,8 @@ class LearningRateScene(Scene):
 
         self.play(DrawBorderThenFill(axes), Write(labels), Write(
             eqs[0].move_to(UP*3+LEFT*4)), Write(eqs[1].move_to(UP*2.3+LEFT*4)), Create(x2_line))
+
+        self.wait()
 
         t = ValueTracker(2)
 
@@ -518,28 +607,40 @@ class LearningRateScene(Scene):
 
         self.play(Create(vec_1d), Create(vec_orig), Write(vec_1d_mag))
 
-        self.play(t.animate.set_value(-2))
-
-        self.play(t.animate.set_value(2))
+        self.wait()
 
         self.play(t.animate.set_value(-2))
 
+        self.wait()
+
         self.play(t.animate.set_value(2))
+
+        self.wait()
+
+        self.play(t.animate.set_value(-2))
+
+        self.wait()
+
+        self.play(t.animate.set_value(2))
+
+        self.wait()
 
         arrow = Arrow(start=UP, end=DOWN).next_to(eqs[1], DOWN)
 
         self.play(Create(arrow), FadeIn(
             eqs[2].move_to(eqs[1]).shift(DOWN*2.5), shift=DOWN))
 
+        self.wait()
+
         value = 2
 
         while value > 0.01:
             value = value + 0.3 * x2_prime(value)
             self.play(t.animate.set_value(value))
+            self.wait(0.5)
         else:
             self.play(t.animate.set_value(value))
-
-        self.wait(30)  # just for testing, but makes it easier to see
+            self.wait()
 
 
 class LearningRate3DScene(ThreeDScene):
@@ -576,11 +677,13 @@ class LearningRate3DScene(ThreeDScene):
         self.play(DrawBorderThenFill(axes.shift(RIGHT)), Write(eqs[0].to_corner(UL)), Write(
             labels[0].shift(RIGHT)), Write(labels[1].shift(RIGHT)), Write(labels[2].shift(RIGHT)), Create(surface.shift(RIGHT)), Create(grad_vec.shift(RIGHT)))
 
+        self.wait()
+
         self.add_fixed_in_frame_mobjects(eqs[1])
 
         self.play(Write(eqs[1].next_to(eqs[0], DOWN)))
 
-        self.wait(30)
+        self.wait()
 
 
 class NeuralNetworkScene(Scene):
@@ -605,29 +708,45 @@ class NeuralNetworkScene(Scene):
 
         self.play(DrawBorderThenFill(xs.move_to(UP*3), run_time=0.5))
 
+        self.wait()
+
         f = MathTex("f(x)").scale(2).next_to(arrow, RIGHT)
 
         self.play(Create(arrow), Write(f))
 
+        self.wait()
+
         self.play(DrawBorderThenFill(ys.move_to(DOWN*3), run_time=0.5))
 
+        self.wait()
+
         self.play(VGroup(arrow, f).animate.shift(RIGHT*3))
+
+        self.wait()
 
         msg = Text("Universal Function Approximator")
 
         self.play(Write(msg.shift(UP*1.5+LEFT*2)))
 
+        self.wait()
+
         eq = MathTex("min(E(p_i, p_{i+1},\cdots, p_n))")
 
         self.play(Write(eq.next_to(msg, DOWN*2)))
 
+        self.wait()
+
         self.play(FadeOut(xs, ys, arrow, f, msg, eq))
+
+        self.wait()
 
         from neural_network import NeuralNetworkMobject
 
         network = NeuralNetworkMobject([3, 4, 1])
 
         self.play(Write(network.scale(2)))
+
+        self.wait()
 
         network.label_inputs("x")
         network.label_outputs("y")
@@ -638,68 +757,80 @@ class NeuralNetworkScene(Scene):
 
         self.play(Write(eq1.next_to(network, DOWN*1.5)), Create(rect))
 
+        self.wait()
+
         self.play(FadeOut(eq1), FadeOut(rect), ReplacementTransform(network,
                                                                     NeuralNetworkMobject([16, 8, 8, 4, 2]).move_to(network).scale(0.9).label_inputs("x").label_outputs("y")))
 
-        self.wait(30)
+        self.wait()
 
 
 class DalleScene(Scene):
     def construct(self):
-        # nebula_img = ImageMobject("images/nebula.png").shift(UP/2)
-        # nebula_cap = Text("A nebula shaped as a seahorse").next_to(
-        #     nebula_img, DOWN)
-        # nebula_img.generate_target()
-        # nebula_cap.generate_target()
+        nebula_img = ImageMobject("images/nebula.png").shift(UP/2)
+        nebula_cap = Text("A nebula shaped as a seahorse").next_to(
+            nebula_img, DOWN)
+        nebula_img.generate_target()
+        nebula_cap.generate_target()
 
-        # homer_img = ImageMobject("images/homer.jpg").shift(UP/2)
-        # homer_cap = Text("A topiary hedge cut in the shape of Homer Simpson").next_to(
-        #     homer_img, DOWN)
-        # homer_img.generate_target()
-        # homer_cap.generate_target()
+        homer_img = ImageMobject("images/homer.jpg").shift(UP/2)
+        homer_cap = Text("A topiary hedge cut in the shape of Homer Simpson").next_to(
+            homer_img, DOWN)
+        homer_img.generate_target()
+        homer_cap.generate_target()
 
-        # panda_img = ImageMobject("images/panda.png").shift(UP/2)
-        # panda_cap = Text("A cybertronic panda").next_to(panda_img[0], DOWN)
-        # panda_img.generate_target()
-        # panda_cap.generate_target()
+        panda_img = ImageMobject("images/panda.png").shift(UP/2)
+        panda_cap = Text("A cybertronic panda").next_to(panda_img[0], DOWN)
+        panda_img.generate_target()
+        panda_cap.generate_target()
 
-        # forest_img = ImageMobject("images/forest.png").shift(UP/2)
-        # forest_cap = Text("A forest made of candy canes").next_to(
-        #     forest_img[0], DOWN)
-        # forest_img.generate_target()
-        # forest_cap.generate_target()
+        forest_img = ImageMobject("images/forest.png").shift(UP/2)
+        forest_cap = Text("A forest made of candy canes").next_to(
+            forest_img[0], DOWN)
+        forest_img.generate_target()
+        forest_cap.generate_target()
 
-        # self.play(FadeIn(nebula_img), FadeIn(nebula_cap))
-        # nebula_img.target.shift(LEFT*5+UP*2).scale(0.5)
-        # nebula_cap.target.shift(
-        #     LEFT*5+UP*4).scale(0.5)
-        # self.play(MoveToTarget(nebula_img), MoveToTarget(nebula_cap))
+        self.play(FadeIn(nebula_img), FadeIn(nebula_cap))
+        self.wait()
+        nebula_img.target.shift(LEFT*5+UP*2).scale(0.5)
+        nebula_cap.target.shift(
+            LEFT*5+UP*4).scale(0.5)
+        self.play(MoveToTarget(nebula_img), MoveToTarget(nebula_cap))
+        self.wait()
 
-        # self.play(FadeIn(homer_img), FadeIn(homer_cap))
-        # homer_img.target.shift(UP*2).scale(0.7)
-        # homer_cap.target.shift(UP*3).scale(0.4)
-        # self.play(MoveToTarget(homer_img), MoveToTarget(homer_cap))
+        self.play(FadeIn(homer_img), FadeIn(homer_cap))
+        self.wait()
+        homer_img.target.shift(UP*2).scale(0.7)
+        homer_cap.target.shift(UP*3).scale(0.4)
+        self.play(MoveToTarget(homer_img), MoveToTarget(homer_cap))
+        self.wait()
 
-        # self.play(FadeIn(panda_img), FadeIn(panda_cap))
-        # panda_img.target.shift(LEFT*5+UP*-2.2).scale(0.5)
-        # panda_cap.target.shift(LEFT*5+UP*-0.1).scale(0.7)
-        # self.play(MoveToTarget(panda_img), MoveToTarget(panda_cap))
+        self.play(FadeIn(panda_img), FadeIn(panda_cap))
+        self.wait()
+        panda_img.target.shift(LEFT*5+UP*-2.2).scale(0.5)
+        panda_cap.target.shift(LEFT*5+UP*-0.1).scale(0.7)
+        self.play(MoveToTarget(panda_img), MoveToTarget(panda_cap))
+        self.wait()
 
-        # self.play(FadeIn(forest_img), FadeIn(forest_cap))
-        # forest_img.target.shift(UP*-2.3).scale(0.5)
-        # forest_cap.target.shift(UP*-0.005).scale(0.5)
-        # self.play(MoveToTarget(forest_img), MoveToTarget(forest_cap))
+        self.play(FadeIn(forest_img), FadeIn(forest_cap))
+        self.wait()
+        forest_img.target.shift(UP*-2.3).scale(0.5)
+        forest_cap.target.shift(UP*-0.005).scale(0.5)
+        self.play(MoveToTarget(forest_img), MoveToTarget(forest_cap))
+        self.wait()
 
-        # brace = Brace(mobject=Group(panda_img, nebula_img, homer_img, forest_img),
-        #               direction=RIGHT)
+        brace = Brace(mobject=Group(panda_img, nebula_img, homer_img, forest_img),
+                      direction=RIGHT)
 
-        # brace_txt = Text("AI Generated").scale(0.8)
+        brace_txt = Text("AI Generated").scale(0.8)
 
-        # self.play(Create(brace.shift(RIGHT+DOWN*0.2).scale(0.95)),
-        #           Write(brace_txt.next_to(brace, RIGHT), run_time=0.5))
+        self.play(Create(brace.shift(RIGHT+DOWN*0.2).scale(0.95)),
+                  Write(brace_txt.next_to(brace, RIGHT), run_time=0.5))
+        self.wait()
 
-        # self.play(FadeOut(nebula_img, nebula_cap, homer_img,
-        #           homer_cap, panda_img, panda_img, forest_img, forest_cap, brace, brace_txt))
+        self.play(FadeOut(nebula_img, nebula_cap, homer_img,
+                  homer_cap, panda_img, panda_cap, forest_img, forest_cap, brace, brace_txt))
+        self.wait()
 
         english = Text("English Language").shift(LEFT*4)
 
@@ -710,10 +841,14 @@ class DalleScene(Scene):
         images = Text("Images").next_to(arrow, RIGHT)
 
         self.play(Write(english))
+        self.wait()
         self.play(Create(arrow), Write(f))
+        self.wait()
         self.play(Write(images))
+        self.wait()
 
         self.play(FadeOut(english, arrow, f, images))
+        self.wait()
 
         axes = Axes(x_range=[0, 5], y_range=[0, 25, 5])
 
@@ -735,12 +870,12 @@ class DalleScene(Scene):
 
         self.play(DrawBorderThenFill(axes), Write(labels), *
                   [Write(dot) for dot in dots], Create(guess_line))
+        self.wait()
 
         dot = Dot(axes.coords_to_point(3, guess_fn(3)), color=PURPLE)
 
         self.play(Write(Arrow(UP, DOWN).next_to(dot, UP)), Write(dot))
-
-        self.wait(30)
+        self.wait()
 
 
 class EndScene(Scene):
@@ -752,7 +887,8 @@ class EndScene(Scene):
             t2, DOWN)
 
         self.play(Write(t1))
+        self.wait()
         self.play(Write(t2))
+        self.wait()
         self.play(Write(t3))
-
-        self.wait(30)
+        self.wait()
