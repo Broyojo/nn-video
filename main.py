@@ -1,5 +1,8 @@
+import math
 import random
 from manim import *
+
+config["max_files_cached"] = 500
 
 
 class LinearScene(Scene):
@@ -235,29 +238,305 @@ class GradientScene(Scene):
                 r"\frac{\partial }{\partial b}=-2(y_1-(mx_1+b))-2(y_2-(mx_2+b))-2(y_3-(mx_3+b))"),
             MathTex(
                 r"\nabla E(m,b)=\left \langle \frac{\partial }{\partial m},\ \frac{\partial }{\partial b} \right \rangle",
-            )
+            ),
+            MathTex(r"f(x)=x^2"),
+            MathTex(r"f'(x)=2x"),
         ]
 
-        # self.play(Write(eqs[0].move_to(UP/2).scale(0.8)),
-        #           Write(eqs[1].move_to(DOWN/2).scale(0.8)))
+        self.play(Write(eqs[0].move_to(UP/2).scale(0.8)),
+                  Write(eqs[1].move_to(DOWN/2).scale(0.8)))
 
-        # partials = VGroup(eqs[0], eqs[1])
+        partials = VGroup(eqs[0], eqs[1])
 
-        # self.play(ReplacementTransform(partials, eqs[2]))
+        self.play(ReplacementTransform(partials, eqs[2]))
 
-        # self.play(FadeOut(partials, eqs[2]))
+        self.play(FadeOut(partials, eqs[2]))
 
-        axes = Axes(x_range=[-4, 4], y_range=[0, 6],
+        axes = Axes(x_range=[-8, 8, 2], y_range=[0, 9, 2],
                     axis_config={"include_numbers": True},)
 
-        labels = axes.get_axis_labels(x_label="x", y_label="f(x)=x^2")
+        labels = axes.get_axis_labels(x_label="x", y_label="y")
 
         def x2_fn(x): return x**2
+        def x2_prime(x): return 2*x
 
         x2_line = axes.plot(x2_fn, color=BLUE)
 
-        self.play(DrawBorderThenFill(axes), Write(labels))
+        self.play(DrawBorderThenFill(axes), Write(labels), Write(
+            eqs[3].move_to(UP*3+LEFT*4)), Write(eqs[4].move_to(UP*2.3+LEFT*4)))
 
         self.play(Create(x2_line))
 
-        vec_1d = 0
+        t = ValueTracker(2)
+
+        vec_orig = Dot(axes.coords_to_point(
+            t.get_value(), x2_fn(t.get_value())), color=YELLOW)
+
+        vec_orig.add_updater(lambda x: x.move_to(
+            axes.coords_to_point(t.get_value(), x2_fn(t.get_value()))))
+
+        vec_1d = Vector([x2_prime(t.get_value()), 0], color=YELLOW).put_start_and_end_on(
+            axes.coords_to_point(t.get_value(), x2_fn(t.get_value())), axes.coords_to_point(t.get_value()+x2_prime(t.get_value()), x2_fn(t.get_value())))
+
+        vec_1d.add_updater(lambda x: x.put_start_and_end_on(
+            axes.coords_to_point(
+                t.get_value(),
+                x2_fn(t.get_value())
+            ),
+            axes.coords_to_point(
+                t.get_value()+x2_prime(t.get_value()),
+                x2_fn(t.get_value())
+            )
+        ))
+
+        vec_1d_mag = DecimalNumber(x2_prime(t.get_value())).move_to(axes.coords_to_point(
+            t.get_value()+x2_prime(t.get_value()),
+            x2_fn(t.get_value()),
+        ) + DOWN*0.5)
+
+        vec_1d_mag.add_updater(lambda x: x.set_value(
+            abs(x2_prime(t.get_value()))))
+        vec_1d_mag.add_updater(lambda x: x.move_to(axes.coords_to_point(
+            t.get_value()+x2_prime(t.get_value()),
+            x2_fn(t.get_value()),
+        ) + DOWN*0.5))
+
+        self.play(Create(vec_1d), Create(vec_orig), Write(vec_1d_mag))
+
+        self.play(t.animate.set_value(0))
+
+        self.wait(2)  # just for testing, but makes it easier to see
+
+        t.set_value(-0.0001)
+
+        self.play(t.animate.set_value(-2))
+
+
+class Gradient3DScene(ThreeDScene):
+    def construct(self):
+        axes = ThreeDAxes(
+            x_range=[-5, 5], y_range=[-5, 5], z_range=[-5, 5])
+
+        labels = VGroup(axes.get_x_axis_label("m"), axes.get_y_axis_label(
+            "b"), axes.get_z_axis_label("E(m,b)"))
+
+        def err_fn(m, b):
+            xyz = axes.coords_to_point(m, b, 7*m*b/math.exp(m**2+b**2))
+            return xyz
+
+        surface = Surface(
+            err_fn, v_range=[-2, +2], u_range=[-2, +2], resolution=(42, 42), stroke_color=BLACK)
+
+        surface.set_shade_in_3d(True)
+
+        self.set_camera_orientation(phi=60 * DEGREES, theta=-45 * DEGREES)
+
+        eqs = [
+            MathTex(
+                r"\nabla E(m,b)=\left \langle \frac{\partial }{\partial m},\ \frac{\partial }{\partial b} \right \rangle"),
+            MathTex(
+                r"-\nabla E(m,b)=\left \langle -\frac{\partial }{\partial m},\ -\frac{\partial }{\partial b} \right \rangle"),
+        ]
+
+        self.add_fixed_in_frame_mobjects(eqs[0])
+
+        self.play(DrawBorderThenFill(axes), Write(eqs[0].to_corner(UL)))
+        self.play(Write(labels[0]))
+        self.play(Write(labels[1]))
+        self.play(Write(labels[2]))
+        self.play(Create(surface))
+
+        grad_vec = Arrow3D(start=err_fn(1, -0.5), end=err_fn(
+            1, 0.5), color=YELLOW).move_to(err_fn(1, 0.1))
+
+        self.play(Create(grad_vec))
+
+        q_mark = Text("?", font_size=200).move_to(LEFT*5)
+
+        self.add_fixed_in_frame_mobjects(q_mark)
+
+        self.play(Write(q_mark))
+
+        self.play(FadeOut(q_mark))
+
+        self.play(FadeOut(eqs[0], run_time=0.5))
+
+        self.add_fixed_in_frame_mobjects(eqs[1])
+
+        self.play(Write(eqs[1].to_corner(UL)), ReplacementTransform(grad_vec, Arrow3D(start=err_fn(
+            1, 0.5), end=err_fn(1, -0.5), color=YELLOW).move_to(err_fn(1, 0.1))))
+
+        self.wait(30)
+
+
+class GradientDescentScene(Scene):
+    def construct(self):
+        eqs = [
+            MathTex(r"m=m_i"),
+            MathTex(r"b=b_i"),
+            MathTex(
+                r"\nabla E(m,b)=\left \langle \frac{\partial }{\partial m},\ \frac{\partial }{\partial b} \right \rangle"),
+            MathTex(
+                r"\Rightarrow \nabla E(m_i,b_i)=\left \langle \left.\frac{\partial }{\partial m}\right|_{m_i,b_i},\ \left.\frac{\partial }{\partial b}\right|_{m_i,b_i} \right \rangle"),
+            MathTex(
+                r"=\left \langle \left.\frac{\partial }{\partial m}\right|_{m_i,b_i},\ \left.\frac{\partial }{\partial b}\right|_{m_i,b_i} \right \rangle"),
+            MathTex(
+                r"\Rightarrow \left \langle -\left.\frac{\partial }{\partial m}\right|_{m_i,b_i},\ -\left.\frac{\partial }{\partial b}\right|_{m_i,b_i} \right \rangle"),
+            MathTex(
+                r"\left \langle m_i, \, b_i \right \rangle + \left \langle -\left.\frac{\partial }{\partial m}\right|_{m_i,b_i},-\left.\frac{\partial }{\partial b}\right|_{m_i,b_i} \right \rangle"),
+            MathTex(
+                r"\left \langle m_i-\left.\frac{\partial }{\partial m}\right|_{m_i,b_i}, \, b_i-\left.\frac{\partial }{\partial b}\right|_{m_i,b_i} \right \rangle"),
+            MathTex(
+                r"m=m_i-\left.\frac{\partial }{\partial m}\right|_{m_i,b_i}"),
+            MathTex(
+                r"b=b_i-\left.\frac{\partial }{\partial b}\right|_{m_i,b_i}"),
+            MathTex(
+                r"\left |\left \langle -\left.\frac{\partial }{\partial m}\right|_{m_i,b_i},-\left.\frac{\partial }{\partial b}\right|_{m_i,b_i} \right \rangle \right | \ll 1"),
+            MathTex(
+                r"m_{i+1}=m_i-\left.\frac{\partial }{\partial m}\right|_{m_i,b_i}"),
+            MathTex(
+                r"b_{i+1}=b_i-\left.\frac{\partial }{\partial b}\right|_{m_i,b_i}"),
+        ]
+
+        self.play(Write(eqs[0].move_to(UP*3.5+LEFT*5.5)),
+                  Write(eqs[1].move_to(UP*2.8+LEFT*5.5)),
+                  Write(eqs[2].move_to(UP*3.2+RIGHT)))
+
+        self.play(TransformFromCopy(eqs[2], eqs[3].move_to(UP*1.8+RIGHT)))
+
+        self.play(TransformFromCopy(eqs[3], eqs[4].move_to(UP*0.3+RIGHT)))
+
+        self.play(ReplacementTransform(eqs[4], eqs[5].move_to(UP*0.2+RIGHT)))
+
+        self.play(TransformFromCopy(
+            VGroup(eqs[0], eqs[1], eqs[5]), eqs[6].move_to(UP*-1.5+RIGHT)))
+
+        self.play(TransformFromCopy(eqs[6], eqs[7].move_to(UP*-3.1+RIGHT)))
+
+        self.play(ReplacementTransform(
+            eqs[0], eqs[8].move_to(eqs[0]).scale(0.7)))
+        self.play(ReplacementTransform(
+            eqs[1], eqs[9].move_to(eqs[1]).scale(0.8).shift(DOWN*0.5)))
+
+        right_eqs = VGroup(*eqs[2:8])
+
+        self.play(right_eqs.animate.shift(RIGHT))
+
+        self.play(Write(eqs[10].move_to(LEFT*4).scale(0.6)))
+
+        self.wait(30)
+
+
+class RollingBallScene(Scene):
+    def construct(self):
+        random.seed = 69420
+        randomness = 0.3
+        axes = Axes(x_range=[-4, 10], y_range=[-1500, 2000, 1000])
+        def fn_6(x): return (x+2)*(x+1)*(x-3)*(x-4)*(x-6)*(x-8)
+        line = axes.plot(fn_6, color=BLUE)
+
+        t = ValueTracker(1)
+
+        ball = Dot(axes.coords_to_point(1, fn_6(1))+UP*0.15,
+                   radius=0.15, color=GREEN)
+
+        ball.add_updater(lambda x: x.move_to(
+            axes.coords_to_point(t.get_value(), fn_6(t.get_value()))+UP*0.15))
+
+        self.play(DrawBorderThenFill(axes), Create(line), Write(ball))
+
+        self.play(t.animate.set_value(2))
+        self.play(t.animate.set_value(2.7))
+        self.play(t.animate.set_value(3.3))
+        self.play(t.animate.set_value(3.474))
+
+        lowest = Point(axes.coords_to_point(7.336, -998.639))
+
+        self.play(Create(SurroundingRectangle(lowest, buff=0.5)))
+
+        top_text = Text("Gradient Descent")
+
+        self.play(Write(top_text.to_edge(UP)))
+
+        self.wait(30)
+
+
+class LearningRateScene(Scene):
+    def construct(self):
+        eqs = [
+            MathTex(r"f(x)=x^2"),
+            MathTex(r"-f'(x)=-2x"),
+            MathTex(r"0.01 \cdot -2x"),
+        ]
+
+        axes = Axes(x_range=[-8, 8, 2], y_range=[0, 9, 2],
+                    axis_config={"include_numbers": True},)
+
+        labels = axes.get_axis_labels(x_label="x", y_label="y")
+
+        def x2_fn(x): return x**2
+        def x2_prime(x): return -2*x
+
+        x2_line = axes.plot(x2_fn, color=BLUE)
+
+        self.play(DrawBorderThenFill(axes), Write(labels), Write(
+            eqs[0].move_to(UP*3+LEFT*4)), Write(eqs[1].move_to(UP*2.3+LEFT*4)), Create(x2_line))
+
+        t = ValueTracker(2)
+
+        vec_orig = Dot(axes.coords_to_point(
+            t.get_value(), x2_fn(t.get_value())), color=YELLOW)
+
+        vec_orig.add_updater(lambda x: x.move_to(
+            axes.coords_to_point(t.get_value(), x2_fn(t.get_value()))))
+
+        vec_1d = Vector([x2_prime(t.get_value()), 0], color=YELLOW).put_start_and_end_on(
+            axes.coords_to_point(t.get_value(), x2_fn(t.get_value())), axes.coords_to_point(t.get_value()+x2_prime(t.get_value()), x2_fn(t.get_value())))
+
+        vec_1d.add_updater(lambda x: x.put_start_and_end_on(
+            axes.coords_to_point(
+                t.get_value(),
+                x2_fn(t.get_value())
+            ),
+            axes.coords_to_point(
+                t.get_value()+x2_prime(t.get_value()),
+                x2_fn(t.get_value())
+            )
+        ))
+
+        vec_1d_mag = DecimalNumber(x2_prime(t.get_value())).move_to(axes.coords_to_point(
+            t.get_value()+x2_prime(t.get_value()),
+            x2_fn(t.get_value()),
+        ) + DOWN*0.5)
+
+        vec_1d_mag.add_updater(lambda x: x.set_value(
+            abs(x2_prime(t.get_value()))))
+        vec_1d_mag.add_updater(lambda x: x.move_to(axes.coords_to_point(
+            t.get_value()+x2_prime(t.get_value()),
+            x2_fn(t.get_value()),
+        ) + DOWN*0.5))
+
+        self.play(Create(vec_1d), Create(vec_orig), Write(vec_1d_mag))
+
+        self.play(t.animate.set_value(-2))
+
+        self.play(t.animate.set_value(2))
+
+        self.play(t.animate.set_value(-2))
+
+        self.play(t.animate.set_value(2))
+
+        arrow = Arrow(start=UP, end=DOWN).next_to(eqs[1], DOWN)
+
+        self.play(Create(arrow), FadeIn(
+            eqs[2].move_to(eqs[1]).shift(DOWN*2.5), shift=DOWN))
+
+        value = 2
+
+        while value > 0.01:
+            value = value + 0.3 * x2_prime(value)
+            self.play(t.animate.set_value(value))
+        else:
+            self.play(t.animate.set_value(value))
+
+        self.wait(30)  # just for testing, but makes it easier to see
