@@ -1,3 +1,3 @@
 # Hello!
 
-The main code for the video in is `main.py`
+The main code for the [video](https://youtu.be/pAqVYPByOZc) in is `main.py`
