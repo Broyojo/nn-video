@@ -105,6 +105,8 @@ class LinearScene(Scene):
 
         self.play(Write(eqs[5]))
 
+        self.wait()
+
         partial_eqs = VGroup(eqs[6].move_to(LEFT*2), eqs[7].move_to(RIGHT*2))
 
         self.play(Transform(eqs[5], partial_eqs))
@@ -800,7 +802,7 @@ class DalleScene(Scene):
 
         self.play(FadeIn(homer_img), FadeIn(homer_cap))
         self.wait()
-        homer_img.target.shift(UP*2).scale(0.7)
+        homer_img.target.shift(UP*1.8).scale(0.65)
         homer_cap.target.shift(UP*3).scale(0.4)
         self.play(MoveToTarget(homer_img), MoveToTarget(homer_cap))
         self.wait()
