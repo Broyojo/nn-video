@@ -540,3 +540,219 @@ class LearningRateScene(Scene):
             self.play(t.animate.set_value(value))
 
         self.wait(30)  # just for testing, but makes it easier to see
+
+
+class LearningRate3DScene(ThreeDScene):
+    def construct(self):
+        axes = ThreeDAxes(
+            x_range=[-5, 5], y_range=[-5, 5], z_range=[-5, 5])
+
+        labels = VGroup(axes.get_x_axis_label("m"), axes.get_y_axis_label(
+            "b"), axes.get_z_axis_label("E(m,b)"))
+
+        def err_fn(m, b):
+            xyz = axes.coords_to_point(m, b, 7*m*b/math.exp(m**2+b**2))
+            return xyz
+
+        surface = Surface(
+            err_fn, v_range=[-2, +2], u_range=[-2, +2], resolution=(42, 42), stroke_color=BLACK)
+
+        surface.set_shade_in_3d(True)
+
+        self.set_camera_orientation(phi=60 * DEGREES, theta=-45 * DEGREES)
+
+        eqs = [
+            MathTex(
+                r"-\nabla E(m,b)=\left \langle -\frac{\partial }{\partial m},\ -\frac{\partial }{\partial b} \right \rangle"),
+            MathTex(
+                r"0.001 \cdot \left \langle -\frac{\partial }{\partial m},\ -\frac{\partial }{\partial b} \right \rangle"),
+        ]
+
+        grad_vec = Arrow3D(start=err_fn(1, 0.5), end=err_fn(
+            1, -0.5), color=YELLOW).move_to(err_fn(1, 0.1))
+
+        self.add_fixed_in_frame_mobjects(eqs[0])
+
+        self.play(DrawBorderThenFill(axes.shift(RIGHT)), Write(eqs[0].to_corner(UL)), Write(
+            labels[0].shift(RIGHT)), Write(labels[1].shift(RIGHT)), Write(labels[2].shift(RIGHT)), Create(surface.shift(RIGHT)), Create(grad_vec.shift(RIGHT)))
+
+        self.add_fixed_in_frame_mobjects(eqs[1])
+
+        self.play(Write(eqs[1].next_to(eqs[0], DOWN)))
+
+        self.wait(30)
+
+
+class NeuralNetworkScene(Scene):
+    def construct(self):
+        xs = DecimalTable(
+            [[-2, -1, 0, 1, 2]],
+            h_buff=1,
+            row_labels=[MathTex("x")],
+            element_to_mobject_config={"num_decimal_places": 2},
+            include_outer_lines=True,
+        )
+
+        ys = DecimalTable(
+            [[0.14, 0.35, 1, 2.72, 7.39]],
+            h_buff=1,
+            row_labels=[MathTex("y")],
+            element_to_mobject_config={"num_decimal_places": 2},
+            include_outer_lines=True,
+        )
+
+        arrow = Arrow(start=UP*2.5, end=DOWN*2.5).move_to(xs)
+
+        self.play(DrawBorderThenFill(xs.move_to(UP*3), run_time=0.5))
+
+        f = MathTex("f(x)").scale(2).next_to(arrow, RIGHT)
+
+        self.play(Create(arrow), Write(f))
+
+        self.play(DrawBorderThenFill(ys.move_to(DOWN*3), run_time=0.5))
+
+        self.play(VGroup(arrow, f).animate.shift(RIGHT*3))
+
+        msg = Text("Universal Function Approximator")
+
+        self.play(Write(msg.shift(UP*1.5+LEFT*2)))
+
+        eq = MathTex("min(E(p_i, p_{i+1},\cdots, p_n))")
+
+        self.play(Write(eq.next_to(msg, DOWN*2)))
+
+        self.play(FadeOut(xs, ys, arrow, f, msg, eq))
+
+        from neural_network import NeuralNetworkMobject
+
+        network = NeuralNetworkMobject([3, 4, 1])
+
+        self.play(Write(network.scale(2)))
+
+        network.label_inputs("x")
+        network.label_outputs("y")
+
+        eq1 = MathTex("f(x)=mx+b")
+
+        rect = SurroundingRectangle(network.layers[1].neurons[3], buff=0.3)
+
+        self.play(Write(eq1.next_to(network, DOWN*1.5)), Create(rect))
+
+        self.play(FadeOut(eq1), FadeOut(rect), ReplacementTransform(network,
+                                                                    NeuralNetworkMobject([16, 8, 8, 4, 2]).move_to(network).scale(0.9).label_inputs("x").label_outputs("y")))
+
+        self.wait(30)
+
+
+class DalleScene(Scene):
+    def construct(self):
+        # nebula_img = ImageMobject("images/nebula.png").shift(UP/2)
+        # nebula_cap = Text("A nebula shaped as a seahorse").next_to(
+        #     nebula_img, DOWN)
+        # nebula_img.generate_target()
+        # nebula_cap.generate_target()
+
+        # homer_img = ImageMobject("images/homer.jpg").shift(UP/2)
+        # homer_cap = Text("A topiary hedge cut in the shape of Homer Simpson").next_to(
+        #     homer_img, DOWN)
+        # homer_img.generate_target()
+        # homer_cap.generate_target()
+
+        # panda_img = ImageMobject("images/panda.png").shift(UP/2)
+        # panda_cap = Text("A cybertronic panda").next_to(panda_img[0], DOWN)
+        # panda_img.generate_target()
+        # panda_cap.generate_target()
+
+        # forest_img = ImageMobject("images/forest.png").shift(UP/2)
+        # forest_cap = Text("A forest made of candy canes").next_to(
+        #     forest_img[0], DOWN)
+        # forest_img.generate_target()
+        # forest_cap.generate_target()
+
+        # self.play(FadeIn(nebula_img), FadeIn(nebula_cap))
+        # nebula_img.target.shift(LEFT*5+UP*2).scale(0.5)
+        # nebula_cap.target.shift(
+        #     LEFT*5+UP*4).scale(0.5)
+        # self.play(MoveToTarget(nebula_img), MoveToTarget(nebula_cap))
+
+        # self.play(FadeIn(homer_img), FadeIn(homer_cap))
+        # homer_img.target.shift(UP*2).scale(0.7)
+        # homer_cap.target.shift(UP*3).scale(0.4)
+        # self.play(MoveToTarget(homer_img), MoveToTarget(homer_cap))
+
+        # self.play(FadeIn(panda_img), FadeIn(panda_cap))
+        # panda_img.target.shift(LEFT*5+UP*-2.2).scale(0.5)
+        # panda_cap.target.shift(LEFT*5+UP*-0.1).scale(0.7)
+        # self.play(MoveToTarget(panda_img), MoveToTarget(panda_cap))
+
+        # self.play(FadeIn(forest_img), FadeIn(forest_cap))
+        # forest_img.target.shift(UP*-2.3).scale(0.5)
+        # forest_cap.target.shift(UP*-0.005).scale(0.5)
+        # self.play(MoveToTarget(forest_img), MoveToTarget(forest_cap))
+
+        # brace = Brace(mobject=Group(panda_img, nebula_img, homer_img, forest_img),
+        #               direction=RIGHT)
+
+        # brace_txt = Text("AI Generated").scale(0.8)
+
+        # self.play(Create(brace.shift(RIGHT+DOWN*0.2).scale(0.95)),
+        #           Write(brace_txt.next_to(brace, RIGHT), run_time=0.5))
+
+        # self.play(FadeOut(nebula_img, nebula_cap, homer_img,
+        #           homer_cap, panda_img, panda_img, forest_img, forest_cap, brace, brace_txt))
+
+        english = Text("English Language").shift(LEFT*4)
+
+        arrow = Arrow(LEFT, RIGHT).scale(2).next_to(english, RIGHT)
+
+        f = MathTex(r"f").scale(2).next_to(arrow, UP)
+
+        images = Text("Images").next_to(arrow, RIGHT)
+
+        self.play(Write(english))
+        self.play(Create(arrow), Write(f))
+        self.play(Write(images))
+
+        self.play(FadeOut(english, arrow, f, images))
+
+        axes = Axes(x_range=[0, 5], y_range=[0, 25, 5])
+
+        labels = axes.get_axis_labels(x_label="x", y_label="y")
+
+        dot_coords = [
+            axes.coords_to_point(2.2, 14.3),
+            axes.coords_to_point(3.5, 20.1),
+            axes.coords_to_point(4.1, 23.5),
+        ]
+
+        dots = [
+            Dot(dot, color=GREEN) for dot in dot_coords
+        ]
+
+        def guess_fn(x): return 4.781*x+3.68
+
+        guess_line = axes.plot(guess_fn, color=BLUE)
+
+        self.play(DrawBorderThenFill(axes), Write(labels), *
+                  [Write(dot) for dot in dots], Create(guess_line))
+
+        dot = Dot(axes.coords_to_point(3, guess_fn(3)), color=PURPLE)
+
+        self.play(Write(Arrow(UP, DOWN).next_to(dot, UP)), Write(dot))
+
+        self.wait(30)
+
+
+class EndScene(Scene):
+    def construct(self):
+        t1 = Text("Thanks for watching! :D").shift(UP*2)
+        t2 = Text("Links to the code for this video in the description").next_to(
+            t1, DOWN)
+        t3 = Text("See you in the next video, more are to come...").next_to(
+            t2, DOWN)
+
+        self.play(Write(t1))
+        self.play(Write(t2))
+        self.play(Write(t3))
+
+        self.wait(30)
