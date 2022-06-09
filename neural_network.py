@@ -3,7 +3,7 @@ import itertools as it
 
 
 # A customizable Sequential Neural Network
-# Code courtesy by AI with Alex
+# Code courtesy of AI with Alex
 # Modified by Broyojo
 
 
