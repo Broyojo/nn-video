@@ -1,7 +1,5 @@
-import random
-
-
-def f(x): return 5*x+3
+def f(x):
+    return 5 * x + 3
 
 
 xs = [2.2, 3.5, 4.1]

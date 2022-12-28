@@ -1,7 +1,7 @@
-from cmath import log
 from math import exp
-from manim import *
+
 import numpy as np
+from manim import *
 
 
 class Test(Scene):
@@ -24,14 +24,13 @@ class ArgMinExample(Scene):
 
         def func(x):
             return 2 * (x - 5) ** 2
+
         graph = ax.plot(func, color=MAROON)
 
-        initial_point = [ax.coords_to_point(
-            t.get_value(), func(t.get_value()))]
+        initial_point = [ax.coords_to_point(t.get_value(), func(t.get_value()))]
         dot = Dot(point=initial_point)
 
-        dot.add_updater(lambda x: x.move_to(
-            ax.c2p(t.get_value(), func(t.get_value()))))
+        dot.add_updater(lambda x: x.move_to(ax.c2p(t.get_value(), func(t.get_value()))))
         x_space = np.linspace(*ax.x_range[:2], 200)
         minimum_index = func(x_space).argmin()
 
@@ -64,12 +63,12 @@ class Calculus(Scene):
         self.play(Transform(eq1, eq7))
         self.wait()
 
-        self.play(eq1.animate.shift(LEFT*5))
+        self.play(eq1.animate.shift(LEFT * 5))
 
         init = MathTex("(2, 3)")
         self.play(Write(init))
 
-        self.play(init.animate.shift(UP*3+LEFT*5))
+        self.play(init.animate.shift(UP * 3 + LEFT * 5))
 
         eq8 = MathTex(r"3=Ce^{1/2*2^2}")
         eq9 = MathTex(r"3=Ce^{1/2*4}")
@@ -84,13 +83,13 @@ class Calculus(Scene):
         self.play(Transform(eq8, eq11))
         self.wait()
 
-        self.play(eq8.animate.shift(DOWN*3+LEFT*5))
+        self.play(eq8.animate.shift(DOWN * 3 + LEFT * 5))
 
         eq12 = MathTex(r"y=\frac{3}{e^2}e^{\frac{1}{2}x^2}")
 
         eq13 = MathTex(r"y=3e^{\frac{1}{2}x^2-2}")
 
-        self.play(eq1.animate.shift(RIGHT*5))
+        self.play(eq1.animate.shift(RIGHT * 5))
         self.wait()
         self.play(Transform(eq1, eq12))
         self.wait()
@@ -104,7 +103,7 @@ class Calculus(Scene):
         )
         labels = ax.get_axis_labels(x_label="x", y_label=eq13)
 
-        graph = ax.plot(lambda x: 3*exp(0.5*x*x-2))
+        graph = ax.plot(lambda x: 3 * exp(0.5 * x * x - 2))
 
         self.play(DrawBorderThenFill(ax), Write(labels))
 
@@ -123,8 +122,9 @@ class BetterCalculus(Scene):
         self.play(Write(lines[0]))
         self.wait()
         for i, step in enumerate(lines[1:]):
-            self.play(TransformMatchingTex(
-                lines[i-1].copy(), step, path_arc=90 * DEGREES))
+            self.play(
+                TransformMatchingTex(lines[i - 1].copy(), step, path_arc=90 * DEGREES)
+            )
             self.wait()
         self.wait()
 
@@ -135,10 +135,9 @@ class Neuron(Scene):
 
         self.play(Write(neuron))
         self.play(ScaleInPlace(neuron, 0.7))
-        self.play(neuron.animate.shift(LEFT*2+DOWN*2))
+        self.play(neuron.animate.shift(LEFT * 2 + DOWN * 2))
 
-        neuron_2 = SVGMobject(
-            "neuron.svg", stroke_width=0).scale(1.75).next_to(neuron)
+        neuron_2 = SVGMobject("neuron.svg", stroke_width=0).scale(1.75).next_to(neuron)
 
         self.play(Write(neuron_2))
 
@@ -159,9 +158,9 @@ class LinearGradientDescent(Scene):
             axes.coords_to_point(5, 7),
         ]
         self.play(*[Write(Dot(dot, color=GREEN)) for dot in dots])
-        self.play(Create(axes.plot(lambda x: 1.4*x+0.2)))
+        self.play(Create(axes.plot(lambda x: 1.4 * x + 0.2)))
 
-        line_eq = MathTex("{{f(x)}}={{m}}{{x}}+{{b}}").move_to(LEFT*4)
+        line_eq = MathTex("{{f(x)}}={{m}}{{x}}+{{b}}").move_to(LEFT * 4)
 
         self.play(Write(line_eq))
 
@@ -170,5 +169,5 @@ class LinearGradientDescent(Scene):
 
         self.play(ReplacementTransform(line_eq[2], MathTex("1.4")))
 
-        self.play(Create(axes.plot(lambda x: 2*x+0.1, color=RED)))
-        self.play(Create(axes.plot(lambda x: 1.3*x-1.5, color=RED)))
+        self.play(Create(axes.plot(lambda x: 2 * x + 0.1, color=RED)))
+        self.play(Create(axes.plot(lambda x: 1.3 * x - 1.5, color=RED)))

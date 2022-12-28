@@ -1,6 +1,6 @@
-from manim import *
 import itertools as it
 
+from manim import *
 
 # A customizable Sequential Neural Network
 # Code courtesy of AI with Alex
@@ -28,7 +28,7 @@ class NeuralNetworkMobject(VGroup):
         "arrow": True,
         "arrow_tip_size": 0.1,
         "left_size": 1,
-        "neuron_fill_opacity": 1
+        "neuron_fill_opacity": 1,
     }
 
     # Constructor with parameters of the neurons in a list
@@ -39,18 +39,21 @@ class NeuralNetworkMobject(VGroup):
         self.add_neurons()
         self.add_edges()
         self.add_to_back(self.layers)
+
     # Helper method for constructor
 
     def add_neurons(self):
-        layers = VGroup(*[
-            self.get_layer(size, index)
-            for index, size in enumerate(self.layer_sizes)
-        ])
-        layers.arrange_submobjects(
-            RIGHT, buff=self.CONFIG["layer_to_layer_buff"])
+        layers = VGroup(
+            *[
+                self.get_layer(size, index)
+                for index, size in enumerate(self.layer_sizes)
+            ]
+        )
+        layers.arrange_submobjects(RIGHT, buff=self.CONFIG["layer_to_layer_buff"])
         self.layers = layers
         if self.CONFIG["include_output_labels"]:
             self.label_outputs_text()
+
     # Helper method for constructor
 
     def get_nn_fill_color(self, index):
@@ -60,6 +63,7 @@ class NeuralNetworkMobject(VGroup):
             return self.CONFIG["input_neuron_color"]
         else:
             return self.CONFIG["hidden_layer_neuron_color"]
+
     # Helper method for constructor
 
     def get_layer(self, size, index=-1):
@@ -67,19 +71,19 @@ class NeuralNetworkMobject(VGroup):
         n_neurons = size
         if n_neurons > self.CONFIG["max_shown_neurons"]:
             n_neurons = self.CONFIG["max_shown_neurons"]
-        neurons = VGroup(*[
-            Circle(
-                radius=self.CONFIG["neuron_radius"],
-                stroke_color=self.get_nn_fill_color(index),
-                stroke_width=self.CONFIG["neuron_stroke_width"],
-                fill_color=BLACK,
-                fill_opacity=self.CONFIG["neuron_fill_opacity"],
-            )
-            for x in range(n_neurons)
-        ])
-        neurons.arrange_submobjects(
-            DOWN, buff=self.CONFIG["neuron_to_neuron_buff"]
+        neurons = VGroup(
+            *[
+                Circle(
+                    radius=self.CONFIG["neuron_radius"],
+                    stroke_color=self.get_nn_fill_color(index),
+                    stroke_width=self.CONFIG["neuron_stroke_width"],
+                    fill_color=BLACK,
+                    fill_opacity=self.CONFIG["neuron_fill_opacity"],
+                )
+                for x in range(n_neurons)
+            ]
         )
+        neurons.arrange_submobjects(DOWN, buff=self.CONFIG["neuron_to_neuron_buff"])
         for neuron in neurons:
             neuron.edges_in = VGroup()
             neuron.edges_out = VGroup()
@@ -89,12 +93,8 @@ class NeuralNetworkMobject(VGroup):
         if size > n_neurons:
             dots = MathTex("\\vdots")
             dots.move_to(neurons)
-            VGroup(*neurons[:len(neurons) // 2]).next_to(
-                dots, UP, MED_SMALL_BUFF
-            )
-            VGroup(*neurons[len(neurons) // 2:]).next_to(
-                dots, DOWN, MED_SMALL_BUFF
-            )
+            VGroup(*neurons[: len(neurons) // 2]).next_to(dots, UP, MED_SMALL_BUFF)
+            VGroup(*neurons[len(neurons) // 2 :]).next_to(dots, DOWN, MED_SMALL_BUFF)
             layer.dots = dots
             layer.add(dots)
             if self.CONFIG["brace_for_large_layers"]:
@@ -105,6 +105,7 @@ class NeuralNetworkMobject(VGroup):
                 layer.add(brace, brace_label)
 
         return layer
+
     # Helper method for constructor
 
     def add_edges(self):
@@ -118,6 +119,7 @@ class NeuralNetworkMobject(VGroup):
                 n2.edges_in.add(edge)
             self.edge_groups.add(edge_group)
         self.add_to_back(self.edge_groups)
+
     # Helper method for constructor
 
     def get_edge(self, neuron1, neuron2):
@@ -128,7 +130,7 @@ class NeuralNetworkMobject(VGroup):
                 buff=self.CONFIG["neuron_radius"],
                 stroke_color=self.CONFIG["edge_color"],
                 stroke_width=self.CONFIG["edge_stroke_width"],
-                tip_length=self.CONFIG["arrow_tip_size"]
+                tip_length=self.CONFIG["arrow_tip_size"],
             )
         return Line(
             neuron1.get_center(),
@@ -142,7 +144,7 @@ class NeuralNetworkMobject(VGroup):
     def label_inputs(self, l):
         self.output_labels = VGroup()
         for n, neuron in enumerate(self.layers[0].neurons):
-            label = MathTex(f"{l}_"+"{"+f"{n + 1}"+"}")
+            label = MathTex(f"{l}_" + "{" + f"{n + 1}" + "}")
             label.set_height(0.3 * neuron.get_height())
             label.move_to(neuron)
             self.output_labels.add(label)
@@ -153,7 +155,7 @@ class NeuralNetworkMobject(VGroup):
     def label_outputs(self, l):
         self.output_labels = VGroup()
         for n, neuron in enumerate(self.layers[-1].neurons):
-            label = MathTex(f"{l}_"+"{"+f"{n + 1}"+"}")
+            label = MathTex(f"{l}_" + "{" + f"{n + 1}" + "}")
             label.set_height(0.4 * neuron.get_height())
             label.move_to(neuron)
             self.output_labels.add(label)
@@ -165,9 +167,9 @@ class NeuralNetworkMobject(VGroup):
         self.output_labels = VGroup()
         for n, neuron in enumerate(self.layers[-1].neurons):
             label = MathTex(outputs[n])
-            label.set_height(0.75*neuron.get_height())
+            label.set_height(0.75 * neuron.get_height())
             label.move_to(neuron)
-            label.shift((neuron.get_width() + label.get_width()/2)*RIGHT)
+            label.shift((neuron.get_width() + label.get_width() / 2) * RIGHT)
             self.output_labels.add(label)
         self.add(self.output_labels)
 
